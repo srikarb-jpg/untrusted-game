@@ -61,22 +61,22 @@ yui-jar = tools/yuicompressor-2.4.8pre.jar
 # `make` or `make debug` merges scripts (using debug launcher)
 debug:
 	@echo "Building level file…\t\t\t\c"
-	@./compile_levels.sh $(mod-dir)
+	@bash ./compile_levels.sh $(mod-dir)
 	@echo "[ Done ]"
 	@echo "Merging JS files…\t\t\t\c"
 	@cat $(js-modules-debug) > $(js-target)
-	@./parse_target.sh $(js-target) $(mod-dir)
+	@bash ./parse_target.sh $(js-target) $(mod-dir)
 	@echo "[ Done ]"
 
 # `make release` merges and compresses scripts (using release launcher)
 release:
 	@rm -f $(js-target-min)
 	@echo "Building level file…\t\t\t\c"
-	@./compile_levels.sh $(mod-dir)
+	@bash ./compile_levels.sh $(mod-dir)
 	@echo "[ Done ]"
 	@echo "Merging JS files…\t\t\t\c"
 	@cat $(js-modules) > $(js-target)
-	@./parse_target.sh $(js-target) $(mod-dir)
+	@bash ./parse_target.sh $(js-target) $(mod-dir)
 	@echo "[ Done ]"
 	@echo "Compressing merged JS…\t\t\t\c"
 	@java -jar $(yui-jar) -o $(js-target-min) $(js-target)

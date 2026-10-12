@@ -1,115 +1,229 @@
-**Untrusted —or— the Continuing Adventures of Dr. Eval** is an exciting Meta-JavaScript Adventure Game wherein you guide the dashing, steadfast Dr. Eval through a mysterious MACHINE CONTINUUM, wherein, using only his trusty computer and the TURING-COMPLETE power of JavaScript, he must literally ALTER HIS REALITY in order to find his freedom! You must literally edit and re-execute the very JavaScript running the game in your browser to save Dr. Eval from this dark and confusing reality!
+# Untrusted Lab
 
-### Overview
+Play **Untrusted**, a puzzle adventure where every level is unbeatable as
+loaded and the only way out is to rewrite the JavaScript that runs it. The
+game runs inside one small container; you play it in your browser.
 
-The game presents you with a roguelike-like playing environment and a console window  with the JavaScript code generating each level. As loaded, each level is unbeatable, and most of the JavaScript is blocked from editing. The challenge is to open a path to the next level using only the limited tools left open to you.
+The game is by Alex Nisnevich and Greg Shuflin
+([AlexNisnevich/untrusted](https://github.com/AlexNisnevich/untrusted)); this
+repo packages it as a ready-to-use dev container. See [Credits](#credits).
 
-### Development
+## Setup
 
-Run
+You need **Docker Desktop** and **VS Code** installed.
+
+1. **Start Docker Desktop** and wait until it says it's running (whale icon
+   in the taskbar/menu bar stops animating).
+
+2. **Install the Dev Containers extension** in VS Code: open the Extensions
+   view (`Ctrl+Shift+X`, or `Cmd+Shift+X` on Mac), search **Dev Containers**,
+   and install the one by Microsoft.
+
+3. **Get the code** into a normal folder, *not* inside OneDrive, iCloud or
+   Dropbox:
+
+   ```bash
+   git clone https://github.com/srikarb-jpg/untrusted.git
+   ```
+
+   It's about 430 MB, mostly the game's soundtrack, so the download takes a
+   few minutes. No git? On the GitHub page click **Code → Download ZIP** and
+   unzip it.
+
+4. **Open the `untrusted` folder in VS Code** (**File → Open Folder…**).
+
+5. **Reopen in Container.** Click **Reopen in Container** in the pop-up at the
+   bottom right. If you missed it, press `F1`, type
+   `Dev Containers: Reopen in Container`, and press Enter.
+
+   The first time takes a minute or two while the container downloads. It
+   then runs `make` once to build the game. When it's done, the bottom-left
+   corner of VS Code says **Dev Container: Untrusted**.
+
+6. **Check it works.** Open a terminal in VS Code (**Terminal → New
+   Terminal**). It opens *inside* the container. Run:
+
+   ```bash
+   python -m http.server 8000
+   ```
+
+   You should see `Serving HTTP on 0.0.0.0 port 8000 ...` and then nothing
+   else. That's correct: the server is running and waiting for your browser.
+
+7. **Play.** Open **http://localhost:8000** in your browser. You need an
+   internet connection: the page loads one library (jQuery) from the web.
+
+You're set up. Next time, just open the folder in VS Code and it reconnects
+to the container automatically.
+
+## Tutorial
+
+Every command below runs in a terminal **inside the container**. If the
+bottom-left corner of VS Code doesn't say **Dev Container**, you're on your
+own machine; run `Dev Containers: Reopen in Container` first.
+
+### 1. Start and stop the game
+
+```bash
+python -m http.server 8000     # start; leave this terminal running
 ```
-make
-```
-to merge the JavaScript files into `scripts/build/untrusted.js` (and enables debug features).
+
+Open **http://localhost:8000**. Each time the browser loads a file, the
+terminal prints a line like `"GET / HTTP/1.1" 200`. That's normal, not an
+error.
+
+To stop the server, click in the terminal and press `Ctrl+C`.
+
+Use `localhost`, not the `0.0.0.0` address the terminal shows. If the page
+doesn't load, open the **Ports** tab next to the Terminal tab and check that
+port `8000` is listed; if not, click **Forward a Port** and type `8000`.
+
+### 2. How to play
+
+You are the `@`. Move with the **arrow keys**.
+
+The right side of the screen shows the JavaScript that builds the level. Most
+of it is locked; only a few lines or parts of lines can be edited. Each level
+is impossible as loaded, so:
+
+1. Read the code to see how the level is built.
+2. Change the editable parts so there's a way out.
+3. Press **Ctrl+5** (or click **Execute**) to run your new code and rebuild
+   the level.
+4. Walk to the exit.
+
+Other keys worth knowing. Each one also has a button under the editor:
+
+| Key | What it does |
+| --- | --- |
+| `Ctrl+1` | show the commands you've learned (the API reference) |
+| `Ctrl+2` | switch between the map and the code editor |
+| `Ctrl+3` | open a notepad for your own notes |
+| `Ctrl+4` | reset the level's code to how it started |
+| `Ctrl+5` | run your code |
+| `Ctrl+0` | open the menu, including the level list |
+
+If a shortcut switches browser tabs instead, click the matching button.
+
+Your progress is saved in your browser, so you can close the tab and come
+back later. Using a different browser, or a private window, starts fresh.
+
+### 3. All levels are unlocked
+
+`make` builds the game in **debug mode**. That means every level is open from
+the start (`Ctrl+0` → level list) and sound starts muted (turn it on with the
+speaker icon above the map). You can also jump straight to a level by its
+number:
 
 ```
-make release
-```
-merges and minifies the JavaScript files into `scripts/build/untrusted.min.js` (and disables debug features).
-
-To run the game locally, you need to set up a local server to serve `index.html` (this step is necessary due to Access-Control-Allow-Origin restrictions).
-
-First install [http-server](https://github.com/nodeapps/http-server/#installing-globally) if you haven't already:
-
-```
-npm install http-server
+http://localhost:8000/?lvl=5
 ```
 
-Then run:
+Try to beat them in order anyway: each level introduces a new command that
+later levels expect you to know.
 
+### 4. Find your way around
+
+You don't need to touch these files to play, but they're how the game works:
+
+| Folder / file | What it's for |
+| --- | --- |
+| `levels/` | **every level, one `.jsx` file each**; `levels/bonus/` has extra fan-made levels |
+| `scripts/` | the game engine: map, player, objects, code editor |
+| `scripts/build/untrusted.js` | everything above merged into one file by `make`; don't edit it |
+| `solutions/` | **spoilers**: one way to solve each level |
+| `music/`, `sound/` | the soundtrack and sound effects |
+| `.devcontainer/devcontainer.json` | tells VS Code which container to build and to run `make` |
+
+### 5. Make your own level
+
+Levels are JavaScript with a few extra markers. The easiest start is to copy
+an existing one:
+
+1. Copy `levels/bonus/_sampleLevel.jsx` to `levels/bonus/myLevel.jsx`.
+2. Change the map. The code between `#BEGIN_EDITABLE#` and `#END_EDITABLE#`
+   is what the player will be allowed to change.
+3. Rebuild and reload:
+
+   ```bash
+   make
+   ```
+
+   Then hard-refresh the browser (`Ctrl+Shift+R`, or `Cmd+Shift+R` on Mac).
+4. Open the menu (`Ctrl+0`). Your level is in the bonus level list.
+
+The markers are explained under **The .jsx file format** in
+[`UPSTREAM_README.md`](UPSTREAM_README.md#the-jsx-file-format).
+
+Run `make` again after any change in `levels/` or `scripts/`.
+
+### 6. Save your work to GitHub
+
+Your files live in the `untrusted` folder on your own computer, so they're
+safe even if the container is deleted or rebuilt. To save a change to GitHub:
+
+```bash
+git add .
+git commit -m "Describe what you changed"
+git push
 ```
-make runlocal
+
+To push, the repo has to be yours. If you cloned someone else's copy, create
+an empty repo on GitHub (no README) and point your folder at it first:
+
+```bash
+git remote set-url origin https://github.com/YOUR-USERNAME/untrusted.git
+git push -u origin master
 ```
 
-Build your own mod in the `mods` directory:
+### 7. Leave the container
 
-```
-make mod=example_mod
-```
+Stop the server with `Ctrl+C`, then click the **Dev Container** box in the
+bottom-left corner and choose **Reopen Folder Locally**. The container stops
+on its own shortly after.
 
-### Contributing Levels
+---
 
-To add a new level, create a jsx file in [/levels/bonus](https://github.com/AlexNisnevich/untrusted/tree/master/levels/bonus) and add the level filename to the `bonusLevels` array in [game.js](https://github.com/AlexNisnevich/untrusted/blob/master/scripts/game.js#L40).
+## Instructor notes
 
-If you are adding any new commands that the player can use, make sure to add them to `reference.js`.
+The container is `mcr.microsoft.com/devcontainers/python:3.12`. Python serves
+the files and the image already has `make`, `bash` and `sed`, which the build
+needs. Nothing else is installed.
 
-#### The .jsx file format
+Changes from the upstream repo, all so it works the same on every machine:
 
-jsx files are like regular JavaScript files, but have some additional syntax:
-- `#BEGIN_EDITABLE#` and `#END_EDITABLE#` surround editable lines
-- `#{#` and `#}#` wrap editable sections (parts of lines)
-- `#BEGIN_PROPERTIES#` and `#END_PROPERTIES#` surround the properties object at the start of the file. Available properties include:
-  - `commandsIntroduced`: array of new commands introduced in the level (see `reference.js`)
-  - `mapProperties`: optionally contains any of the following:
-     - `allowOverwrite`: if true, placed static objects can be overwritten by other objects
-     - `keyDelay`: specifies the lag, in milliseconds, between player keystrokes (default: 0)
-     - `refreshRate`: the refresh rate of the level, in milliseconds (required for dynamic objects with `interval` properties to work correctly)
-     - `showDrawingCanvas`: if true, the drawing canvas overlay is displayed
-     - `showDummyDom`: if true, a dummy DOM will be displayed instead of the regular map
-  - `music`: name of the background track for the level (see `sound.js`)
-  - `startingMessage`: message displayed at the bottom of the screen when the level starts (if any)
-  - `version`: increase the level version whenever you update a level
-  - `nextBonusLevel`: load another level automatically when this one is solved
-- `#START_OF_START_LEVEL#` and `#END_OF_START_LEVEL#` should be the first and last line of the `startLevel` method, respectively
+- **`.gitattributes`** checks every file out with LF line endings. Without it,
+  Git on Windows converts the build scripts and levels to CRLF and `make` fails
+  inside the Linux container.
+- **The build reads `levels/` directly.** Upstream points `mods/default` at
+  `levels/` with a symlink, which Git on Windows checks out as a plain text
+  file unless symlinks are enabled. `Makefile`, `compile_levels.sh` and
+  `parse_target.sh` now use `levels/` for the default game. `make mod=<name>`
+  still builds the mods in `mods/`. The `Makefile` also runs both scripts
+  with `bash`, so it doesn't depend on their executable permission.
+- **Google Analytics removed** from `index.html`, so students' play isn't
+  reported to the original authors' analytics account.
 
-#### Adding music
+`make release` (the minified build without debug features) needs Java, which
+the container doesn't have. Debug mode is fine for class: it only unlocks the
+levels and mutes sound by default.
 
-To add a new background music track, add an MP3 file (that you have permission to use) to the [/music](https://github.com/AlexNisnevich/untrusted/tree/master/music) and add a new entry to the `tracks` array in [sound.js](https://github.com/AlexNisnevich/untrusted/blob/master/scripts/sound.js).
+`solutions/` has a solution for every level. Tell students it's there so they
+know to avoid it, or delete it in your copy if you'd rather they not see it.
 
-### Acknowledgements
+---
 
-Untrusted is a game by [Alex Nisnevich](http://alex.nisnevich.com/) and [Greg Shuflin](https://github.com/neunenak).
+## Credits
 
-We'd like to thank:
-
-- [Dmitry Mazin](https://github.com/dmazin) for design assistance and for the implementation of multiline editing
-- [Jordan Arnesen](https://github.com/extrajordanary) for playtesting and design of lvl17
-- [Natasha Hull-Richter](http://nhull.com) for extensive playtesting and assistance in level design
-- Alex Bolotov, Colin Curtin, Conrad Irwin, Devin C-R, Eugene Evans, Gilbert Hsyu, Jacob Nisnevich, James Silvey, Jason Jiang, Jimmy Hack, Philip Shao, Ryan Fitzgerald, Stephen Liu, Yayoi Ukai, and Yuval Gnessin for playtesting and feedback
-- [Ondřej Žára](https://github.com/ondras) for his [rot.js](http://ondras.github.io/rot.js/) library
-- [Marijn Haverbeke](https://github.com/marijnh) for his [CodeMirror](http://codemirror.net/) library
-- [Brian Harvey](http://www.cs.berkeley.edu/~bh/) for allowing us to use his likeness in lvl19
-
-#### Soundtrack
-
-You can [listen to the full soundtrack here](https://soundcloud.com/untrusted/sets/untrusted-soundtrack).
-
-The music that appears in Untrusted, in order, is:
-
-- "The Green" - [Jonathan Holliday](http://www.soundclick.com/bands/default.cfm?bandID=836578) (used with permission)
-- "Dmitry's Thing #2" - [Dmitry Mazin](https://soundcloud.com/dmitry-mazin) (written for Untrusted)
-- "Obscure Terrain" - [Revolution Void](http://revolutionvoid.com/) (CC-BY-NC-SA)
-- "coming soon" - [Fex](http://artistserver.com/Fex) (public domain)
-- "cloudy sin" - [iNTRICATE](https://soundcloud.com/stk13) (used with permission)
-- "Dynamic Punctuality" - [Dmitry Mazin](https://soundcloud.com/dmitry-mazin) (written for Untrusted)
-- "Y" - [Tortue Super Sonic](https://soundcloud.com/tss-tortue-super-sonic) (CC-BY-NC-SA)
-- "Night Owl" - [Broke for Free](http://brokeforfree.com/) (CC-BY)
-- "The Waves Call Her Name" - [Sycamore Drive](http://sycamoredrive.bandcamp.com/) (CC-BY-NC-SA)
-- "Come and Find Me - B mix" - [Eric Skiff](http://ericskiff.com/) (CC-BY)
-- "Conspiracy" - [Mike and Alan](https://www.facebook.com/MicAndAlan) (used with permission)
-- "Messeah" - [RoccoW](https://soundcloud.com/roccow) (CC-BY)
-- "Searching" - [Eric Skiff](http://ericskiff.com/) (CC-BY)
-- "Da Funk Do You Know 'bout Chip?" - [That Andy Guy](https://soundcloud.com/that-andy-guy) (used with permission)
-- "Soixante-8" - [Obsibilo](http://freemusicarchive.org/music/Obsibilo/) (CC-BY-NC-SA)
-- "Tart (Pts 1 and 2)" - [BLEO feat KeFF](http://bleo.dummydrome.com/) (CC-BY-NC-SA)
-- "Beach Wedding Dance" - [Rolemusic](https://soundcloud.com/rolemusic) (CC-BY-NC-SA)
-- "Boss Loop 1" - [Essa](http://www.youtube.com/user/Essasmusic) (free to use)
-- "Adversity" - [Seropard](https://soundcloud.com/seropard) (free to use)
-- "Comme Des Orages" - [Obsibilo](http://freemusicarchive.org/music/Obsibilo/) (CC-BY-NC-SA)
-- "Brazilicon Alley" - [Vernon Lenoir](http://vernonlenoir.wordpress.com/) (CC-BY-NC-SA), based on "Aquarela do Brazil" by Ary Barroso
-
-### License
-This work is dual-licensed.
-
-- Untrusted and the Untrusted soundtrack are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License (CC-BY-NC-SA 3.0)</a>. In other words, you are free to use and modify Untrusted for non-commercial purposes, provided that you credit us and your work is also licensed under CC-BY-NC-SA.
-- Additionally, the Untrusted code *without the soundtrack* is licenced under a commercial license. This means that you are able to use Untrusted for commercial purposes under some conditions, provided that you do not use any of the music. Please [contact us](mailto:alex.nisnevich@gmail.com,greg.shuflin@gmail.com) for details.
+- **Untrusted** is by [Alex Nisnevich](http://alex.nisnevich.com/) and
+  [Greg Shuflin](https://github.com/neunenak), with the help of the people
+  listed in [`UPSTREAM_README.md`](UPSTREAM_README.md#acknowledgements).
+- **Soundtrack:** each track's artist and license is listed in
+  [`UPSTREAM_README.md`](UPSTREAM_README.md#soundtrack).
+- **License:** Untrusted and its soundtrack are licensed under
+  [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/). You may
+  use and change it for non-commercial purposes, such as teaching, as long as
+  you credit the authors and share your changes under the same license. This
+  repo is shared under that license too. Full details are in
+  [`UPSTREAM_README.md`](UPSTREAM_README.md#license); keep that file in the
+  repo.
