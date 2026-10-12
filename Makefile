@@ -8,8 +8,9 @@ $(error $(err))
 endif
 
 mod-dir=$(shell if [ -z '$(mod)' ]; then echo 'default'; else echo $(mod); fi)
+mod-path=$(shell if [ -z '$(mod)' ]; then echo 'levels'; else echo 'mods/$(mod)'; fi)
 
-err:=$(shell if [ ! -f 'mods/$(mod-dir)/intro.js' ]; then echo 'File mods/$(mod-dir)/intro.js not found!'; fi)
+err:=$(shell if [ ! -f '$(mod-path)/intro.js' ]; then echo 'File $(mod-path)/intro.js not found!'; fi)
 ifneq '$(err)' ''
 $(error $(err))
 endif
@@ -18,7 +19,7 @@ js-target = scripts/build/untrusted.js
 js-target-min = scripts/build/untrusted.min.js
 
 js-modules = scripts/util.js \
-			 mods/$(mod-dir)/intro.js\
+			 $(mod-path)/intro.js\
 			 scripts/_head.js \
 			 scripts/game.js \
 			 scripts/codeEditor.js \
@@ -37,7 +38,7 @@ js-modules = scripts/util.js \
 			 scripts/_tail.js
 
 js-modules-debug = scripts/util.js \
-				   mods/$(mod-dir)/intro.js\
+				   $(mod-path)/intro.js\
 				   scripts/_head.js \
 				   scripts/game.js \
 				   scripts/codeEditor.js \
